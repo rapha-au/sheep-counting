@@ -84,11 +84,11 @@ class Sheep{
 	void draw(int x, int y, int t){
 		if(t == 1){
 			for(int i=0; i<4; i++){
-				mvprintw(y+i,x,this->sheepLines[i-1][1].c_str());
+				mvprintw(y+i,x,"%s",this->sheepLines[i-1][1].c_str());
 			}
 		}else if(t == 2){
 			for(int i=0; i<4; i++){
-				mvprintw(y+i,x,this->sheepLines2[i-1][1].c_str());
+				mvprintw(y+i,x,"%s",this->sheepLines2[i-1][1].c_str());
 			}
 		}
 	}
@@ -132,14 +132,14 @@ class Farm{
 	
 		void draw_ground(int y, int terminalWidth){
 			for(int i=1; i<terminalWidth; i++){
-				mvprintw(y,i,"_");
+				mvprintw(y,i,"%s","_");
 			}
 		}
 	
 		void draw_fence(int fencex, int fencey){
 		//Draw Fence
 			for(int i=0; i<7; i++){
-				mvprintw(fencey+i, fencex, this->fence[i-1][1].c_str());
+				mvprintw(fencey+i, fencex,"%s", this->fence[i-1][1].c_str());
 			}
 		}
 		
@@ -185,6 +185,7 @@ int main(int argc, char* argv[])
 	}
 	
 	initscr();
+	curs_set(0);
 	int y;
 	int x;
 	getmaxyx(stdscr, y,x);
@@ -203,9 +204,7 @@ int main(int argc, char* argv[])
 
 		while(timer.checkHitTime(std::chrono::steady_clock::now()) == false){
 			
-			mvprintw(1,1,"Press any key to quit");
-
-			refresh();
+			//mvprintw(1,1,"%s","Press any key to quit");
 						
 			farm.update(timer);
 			farm.draw_all(x);
@@ -214,8 +213,7 @@ int main(int argc, char* argv[])
 			if(getch() != -1){
 				break;
 			}
-			
-			
+
 			refresh();
 
 		}
