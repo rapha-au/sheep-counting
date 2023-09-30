@@ -204,8 +204,7 @@ int main(int argc, char* argv[])
 
 		while(timer.checkHitTime(std::chrono::steady_clock::now()) == false){
 			
-			
-						
+					
 			farm.update(timer);
 			farm.draw_all(x);
 			mvprintw(1,1,"%s","Press any key to quit...");
