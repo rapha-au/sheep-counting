@@ -179,8 +179,8 @@ int main(int argc, char* argv[])
 	
 	//Config Args
 	if(argc > 1){
-		if (isdigit(std::__cxx11::stoi(argv[1])) == false){
-			tSeconds = std::__cxx11::stoi(argv[1]);
+		if (isdigit(std::stoi(argv[1])) == false){
+			tSeconds = std::stoi(argv[1]);
 		}
 	}
 	
@@ -204,10 +204,11 @@ int main(int argc, char* argv[])
 
 		while(timer.checkHitTime(std::chrono::steady_clock::now()) == false){
 			
-			//mvprintw(1,1,"%s","Press any key to quit");
+			
 						
 			farm.update(timer);
 			farm.draw_all(x);
+			mvprintw(1,1,"%s","Press any key to quit...");
 			
 			//If something is pressed the counting ends
 			if(getch() != -1){
