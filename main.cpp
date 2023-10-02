@@ -11,12 +11,22 @@
 class Timer{
 	private:
 		int  sheepSeconds;
+		int remainingSeconds;
 		std::chrono::steady_clock::time_point s;
 		std::chrono::steady_clock::time_point initialTimepoint;
 	public:
+		bool reduced;
 		Timer(int s){
 			this->initialTimepoint = std::chrono::steady_clock::now();
 			this->sheepSeconds = s;
+			this->remainingSeconds = this->sheepSeconds;
+			this->reduced = false;
+		}
+
+		int getRemainingSeconds(){return this->remainingSeconds;}
+
+		void reduceRemainingSeconds(){
+			this->remainingSeconds-=1;
 		}
 
 		bool checkHitTime(std::chrono::steady_clock::time_point currentTimepoint){
@@ -109,16 +119,25 @@ class Farm{
 			{"|X|        -----|XX|"},
 			{"                |  |"},
 		};
-	public:
+		int t_height;
+		int t_width;
+
+		public:
 		Farm(){
 			sheepPos = SheepPosition::Left;
+			t_width = 80;
+			t_height = 20;
 		}
+
+		int get_t_width(){return this->t_width;}
+		int get_t_height(){return this->t_height;}
 	
-		void update(Timer timer){
+		void update(Timer &timer){
 			
 			if(timer.getSecond() <= .33){
 				erase();
 				sheepPos = SheepPosition::Left;
+				timer.reduced = false;
 				
 			}else if(timer.getSecond() <= .66 && timer.getSecond() > .33){
 				erase();
@@ -127,7 +146,15 @@ class Farm{
 			}else if(timer.getSecond() <= .99 && timer.getSecond() > .66){
 				erase();
 				sheepPos = SheepPosition::Right;
+				if(timer.reduced == false){
+					timer.reduceRemainingSeconds();
+					timer.reduced = true;
+				}
 			}
+		}
+
+		void draw_totalSeconds(Timer &timer){
+			mvprintw(3,this->t_width-4,"%s", std::to_string(timer.getRemainingSeconds()).c_str());
 		}
 	
 		void draw_ground(int y, int terminalWidth){
@@ -189,7 +216,11 @@ int main(int argc, char* argv[])
 	int y;
 	int x;
 	getmaxyx(stdscr, y,x);
-	if(x < 80 || y < 20){//Check terminal size
+	
+	Farm farm;
+	Timer timer(tSeconds);
+	
+	if(x < farm.get_t_width() || y < farm.get_t_height()){//Check terminal size
 		endwin();
 		std::cout << "Terminal Window is not big enough." << std::endl;
 	}else{
@@ -197,9 +228,6 @@ int main(int argc, char* argv[])
 	
 		nodelay(stdscr, TRUE);
 
-		Farm farm;
-		
-		Timer timer(tSeconds);
 
 
 		while(timer.checkHitTime(std::chrono::steady_clock::now()) == false){
@@ -208,6 +236,7 @@ int main(int argc, char* argv[])
 			farm.update(timer);
 			farm.draw_all(x);
 			mvprintw(1,1,"%s","Press any key to quit...");
+			farm.draw_totalSeconds(timer);
 			
 			//If something is pressed the counting ends
 			if(getch() != -1){
